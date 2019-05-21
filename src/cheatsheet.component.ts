@@ -110,7 +110,7 @@ import {Hotkey} from './hotkey.model';
     font-size: 1.2em;
   }
 }  `],
-    template : `<div class="cfp-hotkeys-container fade" [ngClass]="{'in': helpVisible}" style="display:none"><div class="cfp-hotkeys">
+    template : `<div class="cfp-hotkeys-container fade" style="display:none"><div class="cfp-hotkeys">
   <h4 class="cfp-hotkeys-title">{{ title }}</h4>
   <table><tbody>
     <tr *ngFor="let hotkey of hotkeys">
@@ -134,15 +134,12 @@ export class CheatSheetComponent implements OnInit, OnDestroy {
     }
 
     public ngOnInit(): void {
-        this.subscription = this.hotkeysService.cheatSheetToggle.subscribe((isOpen) => {
-            if(isOpen !== false) {
+        this.subscription = this.hotkeysService.cheatSheetToggle.subscribe(isOpen => {
+            if(isOpen) {
                 this.hotkeys = this.hotkeysService.hotkeys.filter(hotkey => hotkey.description);
-            }
-
-            if(isOpen === false) {
-                this.helpVisible = false;
-            } else {
                 this.toggleCheatSheet();
+            } else {
+                this.helpVisible = isOpen;
             }
         });
     }
@@ -155,6 +152,5 @@ export class CheatSheetComponent implements OnInit, OnDestroy {
 
     public toggleCheatSheet(): void {
         this.helpVisible = !this.helpVisible;
-        this.hotkeysService.toggleCheatSheet();
     }
 }
