@@ -169,7 +169,7 @@ export class HotkeysService {
     toggleCheatSheet() {
         this._isCheatSheetOpen = !this._isCheatSheetOpen;
         this.cheatSheetToggle.next(this.isCheatSheetOpen);
-        console.log('TEST');
+        console.log('ischeatsheetopen', this.isCheatSheetOpen);
     }
 
     private findHotkey(hotkey: Hotkey): number {
