@@ -10,8 +10,8 @@ export class HotkeysService {
     pausedHotkeys: Hotkey[] = [];
     mousetrap: MousetrapInstance;
     cheatSheetToggle: Subject<any> = new Subject();
-    isCheatSheetOpen: boolean = false;
 
+    private _isCheatSheetOpen: boolean = false;
     private _preventIn = ['INPUT', 'SELECT', 'TEXTAREA'];
 
     constructor(@Inject(HotkeyOptions) private options: IHotkeyOptions) {
@@ -45,6 +45,10 @@ export class HotkeysService {
             ));
         }
 
+    }
+
+    get isCheatSheetOpen(): boolean {
+        return this._isCheatSheetOpen;
     }
 
     add(hotkey: Hotkey | Hotkey[], specificEvent?: string): Hotkey | Hotkey[] {
@@ -164,7 +168,7 @@ export class HotkeysService {
     }
 
     toggleCheatSheet() {
-        this.isCheatSheetOpen = !this.isCheatSheetOpen;
+        this._isCheatSheetOpen = !this._isCheatSheetOpen;
         this.cheatSheetToggle.next(this.isCheatSheetOpen);
     }
 
