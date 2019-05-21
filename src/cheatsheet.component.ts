@@ -155,5 +155,6 @@ export class CheatSheetComponent implements OnInit, OnDestroy {
 
     public toggleCheatSheet(): void {
         this.helpVisible = !this.helpVisible;
+        this.hotkeysService.toggleCheatSheet();
     }
 }
