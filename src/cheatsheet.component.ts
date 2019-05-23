@@ -1,11 +1,12 @@
-import {Component, OnInit, OnDestroy, Input} from '@angular/core';
-import {Subscription} from 'rxjs';
-import {HotkeysService} from './hotkeys.service';
-import {Hotkey} from './hotkey.model';
+import { Component, OnInit, OnDestroy, Input } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { HotkeysService } from './hotkeys.service';
+import { Hotkey } from './hotkey.model';
+import { _ } from 'core-js';
 
 @Component({
-    selector : 'hotkeys-cheatsheet',
-    styles : [`
+  selector: 'hotkeys-cheatsheet',
+  styles: [`
 .cfp-hotkeys-container {
   display: table !important;
   position: fixed;
@@ -110,7 +111,7 @@ import {Hotkey} from './hotkey.model';
     font-size: 1.2em;
   }
 }  `],
-    template : `<div class="cfp-hotkeys-container fade" [ngClass]="{'in': helpVisible}" style="display:none"><div class="cfp-hotkeys">
+  template: `<div class="cfp-hotkeys-container fade" [ngClass]="{'in': helpVisible}" style="display:none"><div class="cfp-hotkeys">
   <h4 class="cfp-hotkeys-title">{{ title }}</h4>
   <table><tbody>
     <tr *ngFor="let hotkey of hotkeys">
@@ -124,31 +125,44 @@ import {Hotkey} from './hotkey.model';
 </div></div>`,
 })
 export class CheatSheetComponent implements OnInit, OnDestroy {
-    helpVisible = false;
-    @Input() title: string = 'Keyboard Shortcuts:';
-    subscription: Subscription;
+  helpVisible = false;
+  @Input() title: string = 'Keyboard Shortcuts:';
+  subscription: Subscription;
 
-    hotkeys: Hotkey[];
+  hotkeys: Hotkey[];
 
-    constructor(private hotkeysService: HotkeysService) {
-    }
+  constructor(
+    private hotkeysService: HotkeysService
+  ) { }
 
-    public ngOnInit(): void {
-        this.subscription = this.hotkeysService.cheatSheetToggle.subscribe((isOpen) => {
-            if(isOpen !== false) {
-                this.hotkeys = this.hotkeysService.hotkeys.filter(hotkey => hotkey.description);
-            }
-            this.helpVisible = isOpen;
-        });
-    }
+  public ngOnInit(): void {
+    this.subscription = this.hotkeysService.cheatSheetToggle.subscribe((isOpen) => {
+      this.helpVisible = isOpen;
 
-    public ngOnDestroy(): void {
-        if(this.subscription) {
-            this.subscription.unsubscribe();
-        }
+      if (isOpen) {
+        this.hotkeys = [];
+        this.hotkeysService.hotkeys
+          .map(hk => hk.description)
+          .filter((value, index, self) => self.indexOf(value) === index)
+          .forEach(hk => {
+            this.hotkeysService.hotkeys.some(hotkey => {
+              if (hotkey.description === hk) {
+                this.hotkeys.push(hotkey);
+                return true;
+              }
+            })
+          });
+      }
+    });
+  }
+
+  public ngOnDestroy(): void {
+    if (this.subscription) {
+      this.subscription.unsubscribe();
     }
-    
-    public toggleCheatSheet() {
-      this.hotkeysService.toggleCheatSheet();
-    }
+  }
+
+  public toggleCheatSheet() {
+    this.hotkeysService.toggleCheatSheet();
+  }
 }
